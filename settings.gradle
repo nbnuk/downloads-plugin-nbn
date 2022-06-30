@@ -1,0 +1,8 @@
+rootProject.name='downloads-plugin-nbn'
+
+boolean inplace = true
+
+if (inplace) {
+    include ':downloads-plugin'
+    project(':downloads-plugin').projectDir = new File(settingsDir,'../downloads-plugin')
+}
