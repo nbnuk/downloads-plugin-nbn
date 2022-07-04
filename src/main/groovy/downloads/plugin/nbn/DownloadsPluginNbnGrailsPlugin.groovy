@@ -1,6 +1,8 @@
 package downloads.plugin.nbn
 
 import grails.plugins.*
+import uk.org.nbn.downloads.BiocacheService
+import uk.org.nbn.downloads.DownloadService
 
 class DownloadsPluginNbnGrailsPlugin extends Plugin {
 
@@ -40,9 +42,13 @@ Brief summary/description of the plugin.
     // Online location of the plugin's browseable source code.
 //    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
 
-    Closure doWithSpring() { {->
-            // TODO Implement runtime spring config (optional)
-        }
+    Closure doWithSpring() {
+       def beans = {
+           biocacheService(BiocacheService) { beanDefinition ->
+               beanDefinition.constructorArgs = [ref('grailsApplication')]
+           }
+       }
+        return beans
     }
 
     void doWithDynamicMethods() {
@@ -50,7 +56,8 @@ Brief summary/description of the plugin.
     }
 
     void doWithApplicationContext() {
-        // TODO Implement post initialization spring config (optional)
+        //def ctx = grailsApplication.mainContext
+        //def biocacheService = ctx.getBean("biocacheService")
     }
 
     void onChange(Map<String, Object> event) {
