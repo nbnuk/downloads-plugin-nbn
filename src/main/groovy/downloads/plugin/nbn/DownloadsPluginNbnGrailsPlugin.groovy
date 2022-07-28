@@ -3,6 +3,7 @@ package downloads.plugin.nbn
 import grails.plugins.*
 import uk.org.nbn.downloads.BiocacheService
 import uk.org.nbn.downloads.DownloadService
+import uk.org.nbn.downloads.UtilityService
 
 class DownloadsPluginNbnGrailsPlugin extends Plugin {
 
@@ -44,7 +45,15 @@ Brief summary/description of the plugin.
 
     Closure doWithSpring() {
        def beans = {
+           utilityService(UtilityService) { beanDefinition ->
+               beanDefinition.constructorArgs = [ref('grailsApplication')]
+           }
+
            biocacheService(BiocacheService) { beanDefinition ->
+               beanDefinition.constructorArgs = [ref('grailsApplication')]
+           }
+
+           downloadService(DownloadService){ beanDefinition ->
                beanDefinition.constructorArgs = [ref('grailsApplication')]
            }
        }
