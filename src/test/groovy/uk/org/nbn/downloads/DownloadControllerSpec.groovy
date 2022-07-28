@@ -98,4 +98,25 @@ class DownloadControllerSpec extends Specification {
         controller.chainModel.json == NBN_DOWNLOAD_URL2
 
     }
+
+    void "test options2 for MAP type"() {
+
+        setup:
+        controller.downloadService = Mock(DownloadService)
+
+        def downloadParams = Mock(DownloadParams)
+        downloadParams.downloadType >> NbnDownloadType.MAP.type
+        downloadParams.reasonTypeId >> "wotev"
+        downloadParams.biocacheDownloadParamString() >> ""
+        downloadParams.email >> "a@a.com"
+        params["mapLayoutParams"]="extents=-14.853515625"
+
+        when:
+        controller.options2(downloadParams)
+        controller.confirm(downloadParams)
+
+        then:
+        controller.params.mapLayoutParams == "extents=-14.853515625"
+
+    }
 }

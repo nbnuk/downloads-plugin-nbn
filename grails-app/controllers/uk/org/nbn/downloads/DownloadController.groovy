@@ -5,19 +5,19 @@ import au.org.ala.downloads.DownloadType
 
 class DownloadController extends au.org.ala.downloads.DownloadController{
 
-//    @Override
-    def options1(NbnDownloadParams downloadParams) {
+    @Override
+    def options1(DownloadParams mapDownloadParams) {
         if (!downloadParams.file) {
             downloadParams.file = DownloadType.RECORDS.type + "-" + new Date().format("yyyy-MM-dd")
         }
-        request.setAttribute("mapLayoutParams",downloadParams.mapLayoutParams)
-        super.options1(downloadParams)
+        request.setAttribute("mapLayoutParams",params["mapLayoutParams"])
+        super.options1(mapDownloadParams)
     }
 
-    def options2(NbnDownloadParams downloadParams) {
+    @Override
+    def options2(DownloadParams mapDownloadParams) {
 
-
-        if (downloadParams.downloadType == DownloadType.MAP.type) {
+        if (downloadParams.downloadType == NbnDownloadType.MAP.type) {
             downloadParams.email = authService?.getEmail() ?: downloadParams.email // if AUTH is not present then email should be populated via input on page
 
             def queryContext = grailsApplication.config.biocache?.queryContext?:""
@@ -30,26 +30,31 @@ class DownloadController extends au.org.ala.downloads.DownloadController{
                     isQueuedDownload: true,
                     downloadParams: downloadParams,
                     json: json // Map
-            ], params:[searchParams: downloadParams.searchParams, targetUri: downloadParams.targetUri, downloadType: downloadParams.downloadType, mapLayoutParams: downloadParams.mapLayoutParams])
+            ], params:[searchParams: downloadParams.searchParams, targetUri: downloadParams.targetUri, downloadType: downloadParams.downloadType, mapLayoutParams: params["mapLayoutParams"]])
 
         }
-        super.options2(downloadParams)
+        else {
+            super.options2(mapDownloadParams)
+        }
     }
 
+    @Override
     def confirm (DownloadParams downloadParams) {
 
         Map returnModel = super.confirm(downloadParams)
-        if (chainModel){
+        if (chainModel) {
             if (downloadParams.downloadType == DownloadType.CHECKLIST.type) {
                 chainModel.downloadUrl = replaceFacet(chainModel.downloadUrl)
             } else if (downloadParams.downloadType == DownloadType.FIELDGUIDE.type) {
                 chainModel.downloadUrl = replaceFacet(chainModel.downloadUrl)
                 chainModel.json = replaceFacet(chainModel.json)
+            } else {
+                super.options2(mapDownloadParams)
             }
+
+            returnModel;
+
         }
-
-        returnModel;
-
     }
 
     protected def replaceFacet(String url){
