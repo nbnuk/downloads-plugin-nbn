@@ -12,7 +12,7 @@ buildscript {
     }
 }
 
-version "0.1"
+version "0.0.1-SNAPSHOT"
 group "uk.org.nbn.plugins.grails"
 
 apply plugin:"eclipse"
@@ -31,7 +31,7 @@ repositories {
 }
 
 // Set to true it needed only for development
-boolean inplace = true
+boolean inplace = false
 
 if (inplace) {
     grails {
@@ -58,7 +58,7 @@ dependencies {
     provided "org.grails:grails-plugin-domain-class"
 
     if(!inplace) {
-        compile "au.org.ala.plugins.grails:downloads-plugin:2.0.6-NBN", noCache
+        compile "au.org.ala.plugins.grails:downloads-plugin:2.0.7-NBN-FFTF-0-0-SNAPSHOT"
         //runtime "au.org.ala.plugins.grails:ala-charts-plugin:xxxx", noCache
     }
 
@@ -91,4 +91,36 @@ grailsPublish {
 
 assets {
     packagePlugin = true
+}
+
+publishing {
+    repositories {
+        maven {
+            name 'Nexus'
+            url "https://repository.gbif.org/repository/${project.version.endsWith('-SNAPSHOT') ? 'uk-nbn-snapshots/' : 'uk-nbn-releases/' }"
+            credentials {
+                username = System.getenv('TRAVIS_DEPLOY_USERNAME')
+                password = System.getenv('TRAVIS_DEPLOY_PASSWORD')
+            }
+        }
+    }
+    publications {
+        mavenJar(MavenPublication) {
+            pom.withXml {
+                def pomNode = asNode()
+                pomNode.dependencyManagement.replaceNode {}
+
+                // simply remove dependencies without a version
+                // version-less dependencies are handled with dependencyManagement
+                // see https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/8 for more complete solutions
+                pomNode.dependencies.dependency.findAll {
+                    it.version.text().isEmpty()
+                }.each {
+                    it.replaceNode {}
+                }
+            }
+            from components.java
+
+        }
+    }
 }

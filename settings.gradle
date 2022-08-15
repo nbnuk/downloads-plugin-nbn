@@ -1,6 +1,6 @@
 rootProject.name='downloads-plugin-nbn'
 
-boolean inplace = true
+boolean inplace = false
 
 if (inplace) {
     include ':downloads-plugin'
