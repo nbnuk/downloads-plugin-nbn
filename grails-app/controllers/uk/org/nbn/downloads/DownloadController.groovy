@@ -6,16 +6,16 @@ import au.org.ala.downloads.DownloadType
 class DownloadController extends au.org.ala.downloads.DownloadController{
 
     @Override
-    def options1(DownloadParams mapDownloadParams) {
+    def options1(DownloadParams downloadParams) {
         if (!downloadParams.file) {
             downloadParams.file = DownloadType.RECORDS.type + "-" + new Date().format("yyyy-MM-dd")
         }
         request.setAttribute("mapLayoutParams",params["mapLayoutParams"])
-        super.options1(mapDownloadParams)
+        super.options1(downloadParams)
     }
 
     @Override
-    def options2(DownloadParams mapDownloadParams) {
+    def options2(DownloadParams downloadParams) {
 
         if (downloadParams.downloadType == NbnDownloadType.MAP.type) {
             downloadParams.email = authService?.getEmail() ?: downloadParams.email // if AUTH is not present then email should be populated via input on page
@@ -34,7 +34,7 @@ class DownloadController extends au.org.ala.downloads.DownloadController{
 
         }
         else {
-            super.options2(mapDownloadParams)
+            super.options2(downloadParams)
         }
     }
 
@@ -49,7 +49,7 @@ class DownloadController extends au.org.ala.downloads.DownloadController{
                 chainModel.downloadUrl = replaceFacet(chainModel.downloadUrl)
                 chainModel.json = replaceFacet(chainModel.json)
             } else {
-                super.options2(mapDownloadParams)
+                super.options2(downloadParams)
             }
 
             returnModel;
