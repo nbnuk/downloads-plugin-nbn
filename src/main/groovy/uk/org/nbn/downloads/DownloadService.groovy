@@ -1,6 +1,8 @@
 package uk.org.nbn.downloads
 
 import au.org.ala.downloads.DownloadParams
+import au.org.ala.downloads.DownloadType
+import au.org.ala.downloads.DownloadFormat
 import grails.transaction.Transactional
 import grails.util.Named
 import org.springframework.beans.factory.annotation.Qualifier
@@ -36,8 +38,8 @@ class DownloadService extends au.org.ala.downloads.DownloadService{
                 }
                 triggerOfflineDownload(downloadParams)
             }
-        } else if (downloadParams.downloadType == DownloadType.MAP.type) {
-            DownloadService.log.info "${DownloadType.MAP.type} download triggered"
+        } else if (downloadParams.downloadType == NbnDownloadType.MAP.type) {
+            DownloadService.log.info "${NbnDownloadType.MAP.type} download triggered"
             DownloadService.log.info "map downloadParams = ${downloadParams}"
             triggerOfflineDownload(downloadParams)
         } else {
